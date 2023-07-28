@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 # from django.contrib.auth.models import AbstractUser
 
 
@@ -10,6 +11,7 @@ class Course(models.Model):
         return self.courseTitle
 
 class Student(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     studentId = models.CharField(max_length=10, unique=True)
     studentName = models.CharField(max_length=100)
     course = models.ManyToManyField(Course, verbose_name="courses registered")
