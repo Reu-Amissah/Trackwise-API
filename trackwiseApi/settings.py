@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-6xb56xp*h40qp#hj0$@wdz**z@95)0het@y=@5nj%=m@w56(%#
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['trackwise-api-production.up.railway.app']
+ALLOWED_HOSTS = ['trackwise-api-production.up.railway.app', '127.0.0.1']
 
 
 # Application definition
