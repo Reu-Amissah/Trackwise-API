@@ -2,13 +2,21 @@ from django.db import models
 # from django.contrib.auth.models import AbstractUser
 
 
-class User(models.Model):
+class Student(models.Model):
     studentId = models.CharField(max_length=10, unique=True)
     studentName = models.CharField(max_length=100)
     password = models.CharField(max_length=128)
 
     def __str__(self) -> str:
         return self.studentName
+    
+class Lecturer(models.Model):
+    lecturerId = models.CharField(max_length=10, unique=True)
+    lecturerName = models.CharField(max_length=100)
+    password = models.CharField(max_length=128)
+
+    def __str__(self) -> str:
+        return self.lecturerName
 
 # class Course(models.Model):
 #     name = models.CharField(max_length=255)
