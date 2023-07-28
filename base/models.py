@@ -2,18 +2,26 @@ from django.db import models
 # from django.contrib.auth.models import AbstractUser
 
 
+class Course(models.Model):
+    courseCode = models.CharField(max_length=10, unique=True)
+    courseTitle = models.CharField(max_length=300)
+
+    def __str__(self) -> str:
+        return self.courseTitle
+
 class Student(models.Model):
     studentId = models.CharField(max_length=10, unique=True)
     studentName = models.CharField(max_length=100)
-    password = models.CharField(max_length=128)
+    course = models.ManyToManyField(Course, verbose_name="courses registered")
 
     def __str__(self) -> str:
         return self.studentName
     
+
 class Lecturer(models.Model):
     lecturerId = models.CharField(max_length=10, unique=True)
     lecturerName = models.CharField(max_length=100)
-    password = models.CharField(max_length=128)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.lecturerName
