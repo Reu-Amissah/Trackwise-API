@@ -1,1 +1,1 @@
-web: gunicorn base.wsgi --log-file -
+web: gunicorn trackwiseApi.wsgi --log-file -
