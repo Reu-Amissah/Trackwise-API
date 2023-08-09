@@ -1,12 +1,10 @@
 from django.urls import path
-from rest_framework_simplejwt.views import (
-    TokenObtainPairView,
-)
+from rest_framework.authtoken.views import obtain_auth_token
 from . import views
 
 urlpatterns = [
     path('', views.endpoints),
-    path('token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/login/', obtain_auth_token, name="login"),
     path('student', views.student)
     # path('lecturer', views.Lecturer)
 ]
