@@ -138,8 +138,8 @@ class SessionAPIView(APIView):
 
             #record absent students
             registered_students = Student.objects.filter(courses__in=[course])
-            present_students = class_session.present_students.all()
-            class_session.absent_students = registered_students.exclude(pk__in=present_students)
+            present_students = class_session.presentStudents.all()
+            class_session.absentStudents = registered_students.exclude(pk__in=present_students)
             class_session.save()
 
         if pk == "restart-session":
@@ -148,7 +148,7 @@ class SessionAPIView(APIView):
 
         if pk == "mark-present":
             student = Student.objects.get(user = request.user)
-            class_session.present_students.add(student)
+            class_session.presentStudents.add(student)
             class_session.save()
 
         return Response({"message": "Session updated successfully"}, status=201)

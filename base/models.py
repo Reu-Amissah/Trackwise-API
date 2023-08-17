@@ -35,8 +35,8 @@ class Lecturer(models.Model):
 class ClassSession(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
     lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, null=True)
-    present_students = models.ManyToManyField(Student, verbose_name="students present", blank=True)
-    absent_students = models.ManyToManyField(Student, verbose_name="students absent", blank=True)
+    presentStudents = models.ManyToManyField(Student, verbose_name="students present", blank=True)
+    absentStudents = models.ManyToManyField(Student, verbose_name="students absent", blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
 
