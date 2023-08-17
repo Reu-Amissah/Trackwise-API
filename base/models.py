@@ -1,15 +1,19 @@
 from django.db import models
-from django.contrib import auth
+from django.contrib.auth.models import AbstractUser
 import uuid
+from django.conf import settings
 
 
-class User(auth.models.User):
-    indexNumber = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+class User(AbstractUser):
+    indexNumber = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
     isStudent = models.BooleanField(default=True)
+
+    USERNAME_FIELD = 'indexNumber'
 
     def __str__(self) -> str:
         return self.username + " " + str(self.indexNumber)
     
+
 class Course(models.Model):
     courseCode = models.CharField(max_length=10, unique=True)
     courseTitle = models.CharField(max_length=300)
@@ -35,8 +39,8 @@ class Lecturer(models.Model):
 class ClassSession(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
     lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, null=True)
-    presentStudents = models.ManyToManyField(Student, verbose_name="students present", blank=True)
-    absentStudents = models.ManyToManyField(Student, verbose_name="students absent", blank=True)
+    presentStudents = models.ManyToManyField(Student, verbose_name="students present", related_name="present_students", blank=True)
+    absentStudents = models.ManyToManyField(Student, verbose_name="students absent", related_name="absent_students", blank=True)
     start_time = models.DateTimeField(auto_now_add=True)
     end_time = models.DateTimeField(auto_now=True)
 
