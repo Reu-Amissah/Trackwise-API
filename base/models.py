@@ -1,8 +1,15 @@
 from django.db import models
-from django.contrib.auth.models import User
-# from django.contrib.auth.models import AbstractUser
+from django.contrib import auth
+import uuid
 
 
+class User(auth.models.User):
+    indexNumber = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    isStudent = models.BooleanField(default=True)
+
+    def __str__(self) -> str:
+        return self.username + " " + str(self.indexNumber)
+    
 class Course(models.Model):
     courseCode = models.CharField(max_length=10, unique=True)
     courseTitle = models.CharField(max_length=300)
@@ -11,32 +18,27 @@ class Course(models.Model):
         return self.courseTitle
 
 class Student(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
-    studentId = models.CharField(max_length=10, unique=True)
-    studentName = models.CharField(max_length=100)
-    course = models.ManyToManyField(Course, verbose_name="courses registered")
+    user = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    courses = models.ManyToManyField(Course, verbose_name="courses registered")
 
     def __str__(self) -> str:
         return self.studentName
     
 
 class Lecturer(models.Model):
-    lecturerId = models.CharField(max_length=10, unique=True)
-    lecturerName = models.CharField(max_length=100)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    lecturer = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
+    courses = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self) -> str:
         return self.lecturerName
+    
+class ClassSession(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
+    lecturer = models.ForeignKey(Lecturer, on_delete=models.CASCADE, null=True)
+    present_students = models.ManyToManyField(Student, verbose_name="students present", blank=True)
+    absent_students = models.ManyToManyField(Student, verbose_name="students absent", blank=True)
+    start_time = models.DateTimeField(auto_now_add=True)
+    end_time = models.DateTimeField(auto_now=True)
 
-# class Course(models.Model):
-#     name = models.CharField(max_length=255)
-#     # Add any other fields related to the course
-
-# class EnrolledCourse(models.Model):
-#     user = models.ForeignKey(User, on_delete=models.CASCADE)
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-
-# class ClassAttendance(models.Model):
-#     course = models.ForeignKey(Course, on_delete=models.CASCADE)
-#     unique_code = models.CharField(max_length=10)  # Assuming a unique code length of 10 characters
-#     present_students = models.ManyToManyField(User, blank=True, related_name='attended_classes')
+    def __str__(self) -> str:
+        return self.course.courseTitle + ": " + str(self.start_time) + " - " + str(self.end_time)
