@@ -5,10 +5,9 @@ from django.conf import settings
 
 
 class User(AbstractUser):
-    indexNumber = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False, unique=True)
+    indexNumber = models.CharField(max_length=10, unique=True)
     isStudent = models.BooleanField(default=True)
 
-    USERNAME_FIELD = 'indexNumber'
 
     def __str__(self) -> str:
         return self.username + " " + str(self.indexNumber)
@@ -26,7 +25,7 @@ class Student(models.Model):
     courses = models.ManyToManyField(Course, verbose_name="courses registered")
 
     def __str__(self) -> str:
-        return self.studentName
+        return self.user.username
     
 
 class Lecturer(models.Model):
@@ -34,7 +33,7 @@ class Lecturer(models.Model):
     courses = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self) -> str:
-        return self.lecturerName
+        return self.lecturer.username
     
 class ClassSession(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, null=True)
