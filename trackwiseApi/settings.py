@@ -145,10 +145,10 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "https://trackwise-api-production.up.railway.app",
-    "*",
 ]
 
 CORS_ALLOW_METHODS = [
@@ -158,6 +158,7 @@ CORS_ALLOW_METHODS = [
     'PATCH',
     'DELETE',
     'OPTIONS',
+    '#',
 ]
 
 AUTH_USER_MODEL = 'base.User'
