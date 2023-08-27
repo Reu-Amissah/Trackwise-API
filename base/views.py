@@ -1,14 +1,46 @@
 # from django.shortcuts import render
 # from django.http import JsonResponse
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.parsers import JSONParser, MultiPartParser, FormParser
 from .models import *
 from .serializers import *
 from datetime import datetime
+from django.contrib.auth import authenticate
 
+
+class LoginAPIView(APIView):
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        status = request.GET.get("status")
+
+        username = request.data["username"]
+        password = request.data["password"]
+
+        user = authenticate(username=username, password=password)
+        print(user)
+        if user is not None:
+
+            token, _ = Token.objects.get_or_create(user=user)
+
+            if status == "student":
+                if user.isStudent:
+                    return Response({"message": "Login successful", "token": token.key}, status=200)
+                else:
+                    return Response({"message": "Login failed"}, status=401)
+            elif status == "lecturer":
+                if user.is_staff:
+                    return Response({"message": "Login successful", "token": token.key}, status=200)
+                else:
+                    return Response({"message": "Login failed"}, status=401)
+            else:
+                return Response({"message": "Login failed"}, status=401)
+            
+        return Response({"message": "Login failed"}, status=401)
 
 class UserAPIView(APIView):
 
@@ -40,8 +72,17 @@ class UserAPIView(APIView):
 
 class StudentAPIView(APIView):
     permission_classes = (IsAuthenticated,)
+    
 
     def get(self, request, pk=None):
+        courseCode = request.GET.get("courseCode")
+        if courseCode:
+            course = Course.objects.get(courseCode=courseCode)
+            students = Student.objects.filter(courses__in=[course])
+            serializer = StudentSerializer(students, many=True)
+
+            return Response(serializer.data, status=200)
+
         if pk == "self":
             student = Student.objects.get(user=request.user)
             serializer = StudentSerializer(student)
@@ -69,12 +110,22 @@ class LecturerAPIView(APIView):
 class CourseAPIView(APIView):
     permission_classes = (IsAuthenticated,)
 
-    def get(self, request):
+    def get(self, request, pk=None):
         if request.user.isStudent:
             student = Student.objects.get(user=request.user)
             courses = student.courses.all()
             serializer = CourseSerializer(courses, many=True)
+
         elif request.user.is_staff:
+            if pk:
+                if pk == "details":
+                    courseCode = request.GET.get("courseCode")
+                    course = Course.objects.get(courseCode=courseCode)
+                    students = Student.objects.filter(courses__in=[course])
+                    course_serializer = CourseSerializer(course)
+                    student_serializer = StudentSerializer(students, many=True)
+                    return Response({"course": course_serializer.data, "students": student_serializer.data}, status=200)
+
             lecturer = Lecturer.objects.get(lecturer=request.user)
             courses = lecturer.courses.all()
             serializer = CourseSerializer(courses, many=True)
@@ -107,11 +158,17 @@ class SessionAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
-    def get(self, request):
+    def get(self, request, pk=None):
         if request.user.isStudent:
+            if pk == "all":
+                sessions = ClassSession.objects.all()
+                serializer = SessionSerializer(sessions, many=True)
+                return Response(serializer.data, status=200)
+            
             student = Student.objects.get(user=request.user)
             sessions = ClassSession.objects.filter(course__in=student.courses.all())
             serializer = SessionSerializer(sessions, many=True)
+
         elif request.user.is_staff:
             lecturer = Lecturer.objects.get(lecturer=request.user)
             sessions = ClassSession.objects.filter(lecturer=lecturer)
@@ -120,20 +177,32 @@ class SessionAPIView(APIView):
         return Response(serializer.data, status=200)
     
     def post(self, request):
+        if request.user.isStudent:
+            return Response({"message": "Unauthorized"}, status=401)
+        
         data = request.data
-        course = Course.objects.get(courseCode=data["course"])
+        course = Course.objects.get(courseCode=data["courseCode"])
 
         session = ClassSession.objects.create(
             course=course,
             lecturer=Lecturer.objects.get(lecturer=request.user)
         )
-    
-    def put(self, request, pk):
-        session_id = request.data["session_id"]
-        class_session = ClassSession.objects.get(pk=session_id)
 
+        key = session.session_key
+
+        return Response({"message": "Session created successfully", "key": key}, status=201)
+    
+    def put(self, request, pk=None):
+        sessionKey = request.GET.get("sessionKey")
+        status = request.GET.get("status")
+
+        class_session = ClassSession.objects.get(pk=sessionKey)
+
+        """
+        /sessions/?sessionKey=123&status=mark-present
+        """
         course = class_session.course
-        if pk == "end-session":
+        if status == "end-session":
             class_session.end_time = datetime.now()
 
             #record absent students
@@ -142,11 +211,11 @@ class SessionAPIView(APIView):
             class_session.absentStudents = registered_students.exclude(pk__in=present_students)
             class_session.save()
 
-        if pk == "restart-session":
+        if status == "restart-session":
             class_session.end_time = None
             class_session.save()
 
-        if pk == "mark-present":
+        if status == "mark-present":
             student = Student.objects.get(user = request.user)
             class_session.presentStudents.add(student)
             class_session.save()
