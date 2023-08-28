@@ -75,6 +75,11 @@ class StudentAPIView(APIView):
     
 
     def get(self, request, pk=None):
+        """
+        /students/?courseCode=DCIT400
+
+        reurns all students registered for a course
+        """
         courseCode = request.GET.get("courseCode")
         if courseCode:
             course = Course.objects.get(courseCode=courseCode)
@@ -158,21 +163,33 @@ class SessionAPIView(APIView):
     permission_classes = (IsAuthenticated,)
     parser_classes = (MultiPartParser, FormParser, JSONParser)
 
+
     def get(self, request, pk=None):
+
+        sessionKey = request.GET.get("sessionKey")
+
         if request.user.isStudent:
-            if pk == "all":
-                sessions = ClassSession.objects.all()
-                serializer = SessionSerializer(sessions, many=True)
-                return Response(serializer.data, status=200)
-            
+            """
+            /sessions/
+            """
             student = Student.objects.get(user=request.user)
             sessions = ClassSession.objects.filter(course__in=student.courses.all())
             serializer = SessionSerializer(sessions, many=True)
 
         elif request.user.is_staff:
-            lecturer = Lecturer.objects.get(lecturer=request.user)
-            sessions = ClassSession.objects.filter(lecturer=lecturer)
-            serializer = SessionSerializer(sessions, many=True)
+            """
+            /sessions/all-sessions/
+            """
+            if pk=="all-sessions":
+                lecturer = Lecturer.objects.get(lecturer=request.user)
+                sessions = ClassSession.objects.filter(lecturer=lecturer)
+                serializer = SessionSerializer(sessions, many=True)
+                return Response(serializer.data, status=200)
+            '''
+            /sessions/?sessionKey=123
+            '''
+            session = ClassSession.objects.get(session_key=sessionKey)
+            serializer = SessionSerializer(session)
         
         return Response(serializer.data, status=200)
     
