@@ -27,8 +27,8 @@ SECRET_KEY = 'django-insecure-6xb56xp*h40qp#hj0$@wdz**z@95)0het@y=@5nj%=m@w56(%#
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CORS_ORIGIN_WHITELIST = [
-    "http://localhost:3000",
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
     "https://trackwise-api-production.up.railway.app",
 ]
 
