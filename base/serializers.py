@@ -4,7 +4,8 @@ from .models import *
 class UserSerializer(ModelSerializer):
     class Meta: 
         model = User
-        fields = '__all__'
+
+        exclude = ['password']
 
 
 class CourseSerializer(ModelSerializer):
@@ -13,7 +14,7 @@ class CourseSerializer(ModelSerializer):
         fields = '__all__'
 
 class StudentSerializer(ModelSerializer):
-    student = UserSerializer()
+    user = UserSerializer()
     courses = CourseSerializer(many=True)
     class Meta: 
         model = Student
@@ -21,7 +22,7 @@ class StudentSerializer(ModelSerializer):
 
 class LecturerSerializer(ModelSerializer):
     lecturer = UserSerializer()
-    courses = CourseSerializer(many=True)
+    courses = CourseSerializer()
     class Meta: 
         model = Lecturer
         fields = '__all__'
@@ -29,8 +30,8 @@ class LecturerSerializer(ModelSerializer):
 class SessionSerializer(ModelSerializer):
     course = CourseSerializer()
     lecturer = LecturerSerializer()
-    present_students = StudentSerializer(many=True)
-    absent_students = StudentSerializer(many=True)
+    presentStudents = StudentSerializer(many=True)
+    absentStudents = StudentSerializer(many=True)
     class Meta: 
         model = ClassSession
         fields = '__all__'  
