@@ -167,7 +167,6 @@ class SessionAPIView(APIView):
     def get(self, request, pk=None):
 
         sessionKey = request.GET.get("sessionKey")
-        courseCode = request.GET.get("courseCode")
 
         if request.user.isStudent:
             """
@@ -179,17 +178,17 @@ class SessionAPIView(APIView):
 
         elif request.user.is_staff:
             """
-            /sessions/all-sessions/?courseCode=DCIT400
+            /sessions/all-sessions/
             """
             if pk=="all-sessions":
-                course = Course.objects.get(courseCode=courseCode)
-                sessions = ClassSession.objects.filter(course__in=[course])
+                lecturer = Lecturer.objects.get(lecturer=request.user)
+                sessions = ClassSession.objects.filter(lecturer=lecturer)
                 serializer = SessionSerializer(sessions, many=True)
                 return Response(serializer.data, status=200)
             '''
             /sessions/?sessionKey=123
             '''
-            session = ClassSession.objects.get(pk=sessionKey)
+            session = ClassSession.objects.get(session_key=sessionKey)
             serializer = SessionSerializer(session)
         
         return Response(serializer.data, status=200)
