@@ -27,6 +27,7 @@ SECRET_KEY = 'django-insecure-6xb56xp*h40qp#hj0$@wdz**z@95)0het@y=@5nj%=m@w56(%#
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+CORS_ORIGIN_ALLOW_ALL = True
 
 
 # Application definition
@@ -144,21 +145,5 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_ALL_ORIGINS = True
-CORS_ALLOW_CREDENTIALS = True
-
-CORS_ALLOWED_ORIGINS = [
-    "https://trackwise-api-production.up.railway.app",
-]
-
-CORS_ALLOW_METHODS = [
-    'GET',  # Or any other methods you need
-    'POST',
-    'PUT',
-    'PATCH',
-    'DELETE',
-    'OPTIONS',
-    '#',
-]
 
 AUTH_USER_MODEL = 'base.User'
