@@ -147,9 +147,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
-CORS_ALLOWED_ORIGINS = [
-    "https://trackwise-api-production.up.railway.app",
-]
+# CORS_ALLOWED_ORIGINS = [
+#     "https://trackwise-api-production.up.railway.app",
+# ]
 
 CORS_ALLOW_METHODS = [
     'GET',  # Or any other methods you need
