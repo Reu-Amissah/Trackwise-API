@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ['*']
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:8000",
     "https://trackwise-api-production.up.railway.app",
+    "*",
 ]
 
 
