@@ -248,3 +248,21 @@ class SessionAPIView(APIView):
         session.delete()
         return Response({"message": "Session deleted successfully"}, status=204)
 
+
+
+class EditDescriptionAPIView(APIView):
+    permission_classes = (IsAuthenticated,)
+    parser_classes = (MultiPartParser, FormParser, JSONParser)
+
+    def put(self, request):
+
+        description = request.data["description"]
+        courseCode = request.data["courseCode"]
+
+        if request.user.isStudent:
+            return Response({"message": "Unauthorized"}, status=401)
+        
+        course = Course.objects.get(courseCode=courseCode)
+        course.description = description
+        course.save()
+        return Response({"message": "Description updated successfully"}, status=201)
