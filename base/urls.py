@@ -19,4 +19,6 @@ urlpatterns = [
 
     path('sessions/', views.SessionAPIView.as_view(), name='sessions'),
     path('sessions/<str:pk>/', views.SessionAPIView.as_view(), name='session'),
+
+    path('edit_description/', views.EditDescriptionAPIView.as_view(), name='edit_description'),
 ]

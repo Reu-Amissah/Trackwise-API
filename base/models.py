@@ -37,6 +37,10 @@ def create_user_token(sender, instance=None, created=False, **kwargs):
 class Course(models.Model):
     courseCode = models.CharField(max_length=10, unique=True)
     courseTitle = models.CharField(max_length=300)
+    venue = models.CharField(max_length=100, default="UG")
+    time = models.CharField(max_length=100, default="8:00am - 10:00am")
+    type = models.CharField(max_length=100, default="Lecture")
+    description = models.TextField(default="No description available")
 
     def __str__(self) -> str:
         return self.courseTitle
