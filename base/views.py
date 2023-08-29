@@ -213,7 +213,7 @@ class SessionAPIView(APIView):
         sessionKey = request.GET.get("sessionKey")
         status = request.GET.get("status")
 
-        class_session = ClassSession.objects.get(pk=sessionKey)
+        class_session = ClassSession.objects.get(session_key=sessionKey)
 
         """
         /sessions/?sessionKey=123&status=mark-present
@@ -233,11 +233,15 @@ class SessionAPIView(APIView):
             class_session.save()
 
         if status == "mark-present":
-            student = Student.objects.get(user = request.user)
-            class_session.presentStudents.add(student)
-            class_session.save()
-
-        return Response({"message": "Session updated successfully"}, status=201)
+            #check if student is present
+            if request.user.isStudent:
+                student = Student.objects.get(user = request.user)
+                if student in class_session.presentStudents.all():
+                    return Response({"message": "Student already marked present"}, status=200)
+                else:
+                    class_session.presentStudents.add(student)
+                    class_session.save()
+                    return Response({"message": "Session updated successfully"}, status=201)
     
     def delete(self, request, pk):
         session = ClassSession.objects.get(pk=pk)
