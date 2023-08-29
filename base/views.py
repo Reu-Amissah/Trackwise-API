@@ -132,7 +132,7 @@ class CourseAPIView(APIView):
                     return Response({"course": course_serializer.data, "students": student_serializer.data}, status=200)
 
             lecturer = Lecturer.objects.get(lecturer=request.user)
-            courses = lecturer.courses.all()
+            courses = Course.objects.filter(lecturer=lecturer)
             serializer = CourseSerializer(courses, many=True)
         
         return Response(serializer.data, status=200)
