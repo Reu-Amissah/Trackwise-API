@@ -55,7 +55,7 @@ class Student(models.Model):
 
 class Lecturer(models.Model):
     lecturer = models.OneToOneField(User, on_delete=models.CASCADE, null=True)
-    courses = models.ForeignKey(Course, on_delete=models.CASCADE, null=True, blank=True)
+    courses = models.ManyToManyField(Course, verbose_name="courses registered")
 
     def __str__(self) -> str:
         return self.lecturer.username
