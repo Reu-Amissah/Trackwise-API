@@ -16,13 +16,13 @@ class CourseSerializer(ModelSerializer):
 class StudentSerializer(ModelSerializer):
     user = UserSerializer()
     courses = CourseSerializer(many=True)
-    class Meta: 
+    class Meta:
         model = Student
         fields = '__all__'
 
 class LecturerSerializer(ModelSerializer):
     lecturer = UserSerializer()
-    courses = CourseSerializer()
+    courses = CourseSerializer(many=True)
     class Meta: 
         model = Lecturer
         fields = '__all__'
